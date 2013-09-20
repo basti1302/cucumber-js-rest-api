@@ -6,7 +6,7 @@
   "repository": "https://github.com/basti1302/cucumber-js-rest-api.git",
   "contributors": [],
   "scripts": {
-    "test": "cucumber-js"
+    "test": "grunt"
   },
   "keywords": [
     "cucumber.js",
