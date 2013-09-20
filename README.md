@@ -1,10 +1,14 @@
-Storra
-======
+Cucumber.js + Request = Well tested REST APIs
+=============================================
 [![Build Status](https://travis-ci.org/basti1302/cucumber-js-rest-api.png)](https://travis-ci.org/basti1302/cucumber-js-rest-api)
 
-A little demo code for testing REST APIs with cucumber.js and request.
+A little demo for testing REST APIs with
+[Cucumber.js](https://github.com/cucumber/cucumber-js) and
+[Request](https://github.com/mikeal/request).
 
-Soon to be featured in a blog post at https://blog.codecentric.de/en
+Soon to be featured in a blog post at https://blog.codecentric.de/en.
+
+The features test GitHub's [REST API](http://developer.github.com/v3/).
 
 Setup
 -----
