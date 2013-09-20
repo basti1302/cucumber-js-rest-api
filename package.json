@@ -1,0 +1,33 @@
+{
+  "name": "cucumber-js-rest-api",
+  "version": "0.0.1",
+  "author": "Bastian Krol",
+  "description": "showcase testing REST apis with cucumber.js and restclient",
+  "repository": "https://github.com/basti1302/cucumber-js-rest-api.git",
+  "contributors": [],
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "keywords": [
+    "cucumber.js",
+    "REST",
+    "API",
+    "http",
+    "acceptance test"
+  ],
+  "globalDependencies": {
+    "comment": "Some stuff should be installed globally by doing npm install -g <package>@<version>. There is no way to do that via package.json. So this is just mentioned here as a reminder.",
+    "cucumber": "~0.3.1",
+    "grunt-cli": "latest"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-cucumber": "~0.2.3",
+    "request": "~2.27.0"
+  },
+  "engines": {
+    "node": "~0.8.21"
+  }
+}
