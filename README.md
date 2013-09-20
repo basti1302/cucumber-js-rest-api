@@ -18,3 +18,6 @@ Setup
 * `npm install -g grunt-cli
 * `npm install`
 * `cucumber.js` to run tests
+
+You can also do `grunt watch` to let the tests re-run automatically when a
+relevant file changes.
