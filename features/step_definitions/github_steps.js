@@ -20,6 +20,10 @@ var GithubStepsWrapper = function () {
     this.get(this.issuePath(owner, repo, issue), callback)
   })
 
+  this.When(/^I GET a non-existing resource$/, function(callback) {
+    this.get('/does/not/exist', callback)
+  })
+
   /* THEN */
 
   this.Then(/^the http status should be (\d+)$/, function(status, callback) {
@@ -95,8 +99,8 @@ var GithubStepsWrapper = function () {
       object = object[property]
       if (!object) {
         callback.fail('The last response did not have the property ' +
-          property + '. ' + '\n\n(Expected ' + propertyPathSegments +
-          ' to be\n\n' + expectedValue + ')')
+          property + '. ' + '\nExpected ' + propertyPathSegments +
+          ' to be\n' + expectedValue)
         return null
       }
     })
