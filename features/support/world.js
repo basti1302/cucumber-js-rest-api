@@ -73,16 +73,20 @@ var World = function World(callback) {
     })
   }
 
+  this.rootPath = function() {
+    return '/'
+  }
+
+  this.gistPath = function(gist) {
+    return '/gists/' + gist
+  }
+
   this.repoPath = function(owner, repo) {
     return '/repos/' + owner + '/' + repo
   }
 
   this.issuePath = function(owner, repo, issue) {
     return this.repoPath(owner, repo) + '/issues/' + issue
-  }
-
-  this.issueUri = function(owner, repo, issue) {
-    return this.uri(this.issuePath(owner, repo, issue))
   }
 
   this.uri = function(path) {

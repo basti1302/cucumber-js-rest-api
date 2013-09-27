@@ -6,6 +6,15 @@ var GithubStepsWrapper = function () {
 
   this.World = require('../support/world.js').World
 
+  this.When(/^I GET the root document$/,
+      function(callback) {
+    this.get(this.rootPath(), callback)
+  })
+
+  this.When(/^I GET the gist (\d+)$/, function(gist, callback) {
+    this.get(this.gistPath(gist), callback)
+  })
+
   this.When(/^I GET the issue (\d+) in repository (.*) owned by (.*)$/,
       function(issue, repo, owner, callback) {
     this.get(this.issuePath(owner, repo, issue), callback)
@@ -28,10 +37,10 @@ var GithubStepsWrapper = function () {
   })
 
   // Check if a certain property of the response is equal to something
-  this.Then(/^I should see the (\w+) "([^"]+)"$/,
-      function(property, expectedValue, callback) {
-    if (!assertPropertyIs(this.lastResponse, property, expectedValue,
-        callback)) {
+  this.Then(/^(?:the )?([\w_.]+) should equal "([^"]+)"$/,
+      function(propertyPath, expectedValue, callback) {
+    if (!assertPropertyIs(this.lastResponse, propertyPath,
+        expectedValue, callback)) {
       return
     }
     callback()
@@ -78,49 +87,58 @@ var GithubStepsWrapper = function () {
     }
   }
 
-  function assertPropertyExists(lastResponse, property, expectedValue,
-      callback) {
-    var bodyObject = assertValidJson(lastResponse, callback)
-    if (!bodyObject) { return null }
-    if (!bodyObject[property]) {
-      callback.fail('The last response did not have the property ' +
-        property + '. ' + '\n\nExpected:\n\n' + expectedValue)
-      return null
-    }
-    return bodyObject[property]
+  function assertPropertyExists(lastResponse, propertyPathSegments,
+      expectedValue, callback) {
+    var object = assertValidJson(lastResponse, callback)
+    if (!object) { return null }
+    propertyPathSegments.forEach(function(property) {
+      object = object[property]
+      if (!object) {
+        callback.fail('The last response did not have the property ' +
+          property + '. ' + '\n\n(Expected ' + propertyPathSegments +
+          ' to be\n\n' + expectedValue + ')')
+        return null
+      }
+    })
+    return object
   }
 
-  function assertPropertyIs(lastResponse, property, expectedValue, callback) {
-    var value = assertPropertyExists(lastResponse, property, expectedValue,
-      callback)
+  function assertPropertyIs(lastResponse, propertyPath, expectedValue,
+      callback) {
+    var propertyPathSegments = propertyPath.split('.')
+    var value = assertPropertyExists(lastResponse, propertyPathSegments,
+        expectedValue, callback)
     if (!value) { return false }
     if (value !== expectedValue) {
       callback.fail('The last response did not have the expected content in ' +
-        'property ' + property + '. ' +
+        'property ' + propertyPath + '. ' +
         'Got:\n\n' + value + '\n\nExpected:\n\n' + expectedValue)
       return false
     }
     return true
   }
 
-  function assertPropertyContains(lastResponse, property, expectedValue,
+  function assertPropertyContains(lastResponse, propertyPath, expectedValue,
       callback) {
-    var value = assertPropertyExists(lastResponse, property, expectedValue,
-      callback)
+    var propertyPathSegments = propertyPath.split('.')
+    var value = assertPropertyExists(lastResponse, propertyPathSegments,
+        expectedValue, callback)
     if (!value) { return false }
     if (value.indexOf(expectedValue) === -1) {
       callback.fail('The last response did not have the expected content in ' +
-        'property ' + property + '. ' +
+        'property ' + propertyPath + '. ' +
         'Got:\n\n' + value + '\n\nExpected it to contain:\n\n' + expectedValue)
       return false
     }
     return true
   }
 
-  function lastPathElement(uri) {
+  /*
+  function lastPathSegment(uri) {
     var path = url.parse(uri).pathname
     return path.slice(path.lastIndexOf('/') + 1)
   }
+  */
 }
 
 module.exports = GithubStepsWrapper
