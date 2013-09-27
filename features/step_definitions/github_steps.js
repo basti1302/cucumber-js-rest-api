@@ -132,13 +132,6 @@ var GithubStepsWrapper = function () {
     }
     return true
   }
-
-  /*
-  function lastPathSegment(uri) {
-    var path = url.parse(uri).pathname
-    return path.slice(path.lastIndexOf('/') + 1)
-  }
-  */
 }
 
 module.exports = GithubStepsWrapper
