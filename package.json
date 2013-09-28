@@ -25,7 +25,9 @@
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-cucumber": "~0.2.3",
-    "request": "~2.27.0"
+    "json-hypermedia-api-consumer": "git+https://github.com/basti1302/json-hypermedia-api-consumer.git",
+    "request": "~2.27.0",
+    "uri-template": "~0.4.1"
   },
   "engines": {
     "node": "~0.8.21"
