@@ -1,6 +1,8 @@
 'use strict';
 
 var request = require('request')
+var traverson = require('traverson')
+var walker = new traverson.JsonWalker()
 
 var env = require('./env')
 
@@ -9,8 +11,10 @@ var World = function World(callback) {
   var self = this
 
   this.lastResponse = null
+  this.lastDocument = null
 
   this.get = function(path, callback) {
+    this.clear()
     var uri = this.uri(path)
     request.get(uri, function(error, response) {
       if (error) {
@@ -22,7 +26,21 @@ var World = function World(callback) {
     })
   }
 
+  this.walkToDocument = function(links, templateParams, callback) {
+    this.clear()
+    var startUri = this.rootUri()
+    walker.walk(startUri, links, templateParams, function(error, document) {
+      if (error) {
+        return callback.fail(new Error('Error while walking from ' + startUri +
+            ' along the links ' + links + ': ' + error.message))
+      }
+      self.lastDocument = document
+      callback()
+    })
+  }
+
   this.post = function(path, requestBody, callback) {
+    this.clear()
     var uri = this.uri(path)
     request({url: uri, body: requestBody, method: 'POST'},
         function(error, response) {
@@ -36,6 +54,7 @@ var World = function World(callback) {
   }
 
   this.put = function(path, requestBody, callback) {
+    this.clear()
     var uri = this.uri(path)
     request({url: uri, body: requestBody, method: 'PUT'},
         function(error, response) {
@@ -49,6 +68,7 @@ var World = function World(callback) {
   }
 
   this.delete = function(path, callback) {
+    this.clear()
     var uri = this.uri(path)
     request({url: uri, method: 'DELETE'},
         function(error, response) {
@@ -62,6 +82,7 @@ var World = function World(callback) {
   }
 
   this.options = function(path, callback) {
+    this.clear()
     var uri = this.uri(path)
     request({'uri': uri, method: 'OPTIONS'}, function(error, response) {
       if (error) {
@@ -73,8 +94,17 @@ var World = function World(callback) {
     })
   }
 
+  this.clear = function() {
+    this.lastResponse = null
+    this.lastDocument = null
+  }
+
   this.rootPath = function() {
     return '/'
+  }
+
+  this.rootUri = function() {
+    return this.uri(this.rootPath())
   }
 
   this.gistPath = function(gist) {
