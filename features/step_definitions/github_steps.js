@@ -1,5 +1,9 @@
 'use strict';
 
+/* jshint -W061 */
+// wtf jshint? eval can be harmful? But that is not eval, it's JSONPath#eval
+var jsonPath = require('JSONPath').eval;
+/* jshint +W061 */
 var url = require('url')
 
 var GithubStepsWrapper = function () {
@@ -41,9 +45,9 @@ var GithubStepsWrapper = function () {
   })
 
   // Check if a certain property of the response is equal to something
-  this.Then(/^(?:the )?([\w_.]+) should equal "([^"]+)"$/,
-      function(propertyPath, expectedValue, callback) {
-    if (!assertPropertyIs(this.lastResponse, this.lastDocument, propertyPath,
+  this.Then(/^(?:the )?([\w_.$\[\]]+) should equal "([^"]+)"$/,
+      function(key, expectedValue, callback) {
+    if (!assertPropertyIs(this.lastResponse, this.lastDocument, key,
         expectedValue, callback)) {
       return
     }
@@ -52,8 +56,8 @@ var GithubStepsWrapper = function () {
 
   // Check if a substring is contained in a certain property of the response
   this.Then(/^I should see "([^"]+)" in the (\w+)$/,
-      function(expectedContent, property, callback) {
-    if (!assertPropertyContains(this.lastResponse, this.lastDocument, property,
+      function(expectedContent, key, callback) {
+    if (!assertPropertyContains(this.lastResponse, this.lastDocument, key,
         expectedContent, callback)) {
       return
     }
@@ -97,46 +101,62 @@ var GithubStepsWrapper = function () {
     }
   }
 
-  function assertPropertyExists(lastResponse, lastDocument,
-      propertyPathSegments, expectedValue, callback) {
+  function assertPropertyExists(lastResponse, lastDocument, key, expectedValue,
+      callback) {
     var object = assertValidJson(lastResponse, lastDocument, callback)
     if (!object) { return null }
-    propertyPathSegments.forEach(function(property) {
-      object = object[property]
-      if (!object) {
-        callback.fail('The last response did not have the property ' +
-          property + '. ' + '\nExpected ' + propertyPathSegments +
-          ' to be\n' + expectedValue)
+    var property
+    if (key.indexOf('$.') !== 0 && key.indexOf('$[') !== 0){
+      // normal property
+      property = object[key]
+    } else {
+      // JSONPath expression
+      var matches = jsonPath(object, key)
+      if (matches.length === 0) {
+        // no match
+        callback.fail('The last response did not have the property: ' +
+          key + '\nExpected it to be\n' + expectedValue)
         return null
+      } else if (matches.length > 1) {
+        // ambigious match
+        callback.fail('JSONPath expression ' + key + ' returned more than ' +
+          'one match in object:\n' + JSON.stringify(object))
+        return null
+      } else {
+        // exactly one match, good
+        property = matches[0]
       }
-    })
-    return object
+    }
+    if (property == null) {
+      callback.fail('The last response did not have the property ' +
+        key + '\nExpected it to be\n' + expectedValue)
+      return null
+    }
+    return property
   }
 
-  function assertPropertyIs(lastResponse, lastDocument, propertyPath,
-      expectedValue, callback) {
-    var propertyPathSegments = propertyPath.split('.')
-    var value = assertPropertyExists(lastResponse, lastDocument,
-        propertyPathSegments, expectedValue, callback)
+  function assertPropertyIs(lastResponse, lastDocument, key, expectedValue,
+      callback) {
+    var value = assertPropertyExists(lastResponse, lastDocument, key,
+        expectedValue, callback)
     if (!value) { return false }
     if (value !== expectedValue) {
       callback.fail('The last response did not have the expected content in ' +
-        'property ' + propertyPath + '. ' +
-        'Got:\n\n' + value + '\n\nExpected:\n\n' + expectedValue)
+        'property ' + key + '. ' + 'Got:\n\n' + value + '\n\nExpected:\n\n' +
+        expectedValue)
       return false
     }
     return true
   }
 
-  function assertPropertyContains(lastResponse, lastDocument, propertyPath,
+  function assertPropertyContains(lastResponse, lastDocument, key,
       expectedValue, callback) {
-    var propertyPathSegments = propertyPath.split('.')
-    var value = assertPropertyExists(lastResponse, lastDocument,
-        propertyPathSegments, expectedValue, callback)
+    var value = assertPropertyExists(lastResponse, lastDocument, key,
+        expectedValue, callback)
     if (!value) { return false }
     if (value.indexOf(expectedValue) === -1) {
       callback.fail('The last response did not have the expected content in ' +
-        'property ' + propertyPath + '. ' +
+        'property ' + key + '. ' +
         'Got:\n\n' + value + '\n\nExpected it to contain:\n\n' + expectedValue)
       return false
     }

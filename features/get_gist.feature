@@ -4,4 +4,4 @@ Feature: Get gist details
 
   Scenario: Get a gist
     When I GET the gist 6305970
-    Then user.login should equal "basti1302"
+    Then $.user.login should equal "basti1302"
