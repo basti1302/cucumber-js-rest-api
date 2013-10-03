@@ -5,4 +5,4 @@ Feature: Get gist details
   Scenario: Get a gist
     When I GET the gist 6305970
     Then the http status should be 200
-    And user.login should equal "basti1302"
+    And $.user.login should equal "basti1302"
