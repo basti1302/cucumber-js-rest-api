@@ -5,5 +5,4 @@ Feature: Fetch the root document
 
   Scenario: Get the root document
     When I get the root document
-    Then the http status should be 200
-    And the issues_url should equal "https://api.github.com/issues"
+    Then the issues_url should equal "https://api.github.com/issues"

@@ -12,7 +12,7 @@ var GithubStepsWrapper = function () {
 
   this.When(/^I get the root document$/,
       function(callback) {
-    this.get(this.rootPath(), callback)
+    this.walkToDocument([], null, callback)
   })
 
   this.When(/^I get the gist (\d+)$/, function(gist, callback) {
@@ -21,7 +21,11 @@ var GithubStepsWrapper = function () {
 
   this.When(/^I get the issue (\d+) in repository (.*) owned by (.*)$/,
       function(issue, repo, owner, callback) {
-    this.get(this.issuePath(owner, repo, issue), callback)
+    this.walkToDocument(['repository_url', 'issues_url'],
+      { repo: repo,
+        owner: owner,
+        number: issue
+      }, callback)
   })
 
   this.When(/^I get a non-existing resource$/, function(callback) {
@@ -103,15 +107,15 @@ var GithubStepsWrapper = function () {
 
   function assertPropertyExists(lastResponse, lastDocument, key, expectedValue,
       callback) {
-    var object = assertValidJson(lastResponse, lastDocument, callback)
-    if (!object) { return null }
+    var resource = assertValidJson(lastResponse, lastDocument, callback)
+    if (!resource) { return null }
     var property
     if (key.indexOf('$.') !== 0 && key.indexOf('$[') !== 0){
       // normal property
-      property = object[key]
+      property = resource[key]
     } else {
       // JSONPath expression
-      var matches = jsonPath(object, key)
+      var matches = jsonPath(resource, key)
       if (matches.length === 0) {
         // no match
         callback.fail('The last response did not have the property: ' +
@@ -120,7 +124,7 @@ var GithubStepsWrapper = function () {
       } else if (matches.length > 1) {
         // ambigious match
         callback.fail('JSONPath expression ' + key + ' returned more than ' +
-          'one match in object:\n' + JSON.stringify(object))
+          'one match in resource:\n' + JSON.stringify(resource))
         return null
       } else {
         // exactly one match, good
