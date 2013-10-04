@@ -107,18 +107,6 @@ var World = function World(callback) {
     return this.uri(this.rootPath())
   }
 
-  this.gistPath = function(gist) {
-    return '/gists/' + gist
-  }
-
-  this.repoPath = function(owner, repo) {
-    return '/repos/' + owner + '/' + repo
-  }
-
-  this.issuePath = function(owner, repo, issue) {
-    return this.repoPath(owner, repo) + '/issues/' + issue
-  }
-
   this.uri = function(path) {
     return env.BASE_URL + path
   }
