@@ -10,21 +10,21 @@ var GithubStepsWrapper = function () {
 
   this.World = require('../support/world.js').World
 
-  this.When(/^I GET the root document$/,
+  this.When(/^I get the root document$/,
       function(callback) {
     this.get(this.rootPath(), callback)
   })
 
-  this.When(/^I GET the gist (\d+)$/, function(gist, callback) {
+  this.When(/^I get the gist (\d+)$/, function(gist, callback) {
     this.walkToDocument(['gists_url'], { 'gist_id': gist }, callback)
   })
 
-  this.When(/^I GET the issue (\d+) in repository (.*) owned by (.*)$/,
+  this.When(/^I get the issue (\d+) in repository (.*) owned by (.*)$/,
       function(issue, repo, owner, callback) {
     this.get(this.issuePath(owner, repo, issue), callback)
   })
 
-  this.When(/^I GET a non-existing resource$/, function(callback) {
+  this.When(/^I get a non-existing resource$/, function(callback) {
     this.get('/does/not/exist', callback)
   })
 

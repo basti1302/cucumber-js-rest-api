@@ -3,5 +3,5 @@ Feature: Get gist details
   I want to see the details of a gist
 
   Scenario: Get a gist
-    When I GET the gist 6305970
+    When I get the gist 6305970
     Then $.user.login should equal "basti1302"
