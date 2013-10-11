@@ -3,8 +3,6 @@
 var request = require('request')
 var traverson = require('traverson')
 
-var traverson = require('traverson')
-
 var env = require('./env')
 
 var World = function World(callback) {
