@@ -51,8 +51,7 @@ var GithubStepsWrapper = function () {
   // Check if a certain property of the response is equal to something
   this.Then(/^(?:the )?([\w_.$\[\]]+) should equal "([^"]+)"$/,
       function(key, expectedValue, callback) {
-    if (!assertPropertyIs(this.lastResponse, this.lastDocument, key,
-        expectedValue, callback)) {
+    if (!assertPropertyIs(this.lastResponse, key, expectedValue, callback)) {
       return
     }
     callback()
@@ -61,8 +60,8 @@ var GithubStepsWrapper = function () {
   // Check if a substring is contained in a certain property of the response
   this.Then(/^I should see "([^"]+)" in the (\w+)$/,
       function(expectedContent, key, callback) {
-    if (!assertPropertyContains(this.lastResponse, this.lastDocument, key,
-        expectedContent, callback)) {
+    if (!assertPropertyContains(this.lastResponse, key, expectedContent,
+        callback)) {
       return
     }
     callback()
@@ -85,14 +84,8 @@ var GithubStepsWrapper = function () {
     return lastResponse.body
   }
 
-  function assertValidJson(lastResponse, lastDocument, callback) {
-    /* TODO dirty hack */
-    var body
-    if (!lastResponse && lastDocument) {
-      return lastDocument
-    } else {
-      body = assertBody(lastResponse, callback)
-    }
+  function assertValidJson(lastResponse, callback) {
+    var body = assertBody(lastResponse, callback)
     if (!body) {
       return null
     }
@@ -105,9 +98,9 @@ var GithubStepsWrapper = function () {
     }
   }
 
-  function assertPropertyExists(lastResponse, lastDocument, key, expectedValue,
+  function assertPropertyExists(lastResponse, key, expectedValue,
       callback) {
-    var resource = assertValidJson(lastResponse, lastDocument, callback)
+    var resource = assertValidJson(lastResponse, callback)
     if (!resource) { return null }
     var property
     if (key.indexOf('$.') !== 0 && key.indexOf('$[') !== 0){
@@ -139,10 +132,8 @@ var GithubStepsWrapper = function () {
     return property
   }
 
-  function assertPropertyIs(lastResponse, lastDocument, key, expectedValue,
-      callback) {
-    var value = assertPropertyExists(lastResponse, lastDocument, key,
-        expectedValue, callback)
+  function assertPropertyIs(lastResponse, key, expectedValue, callback) {
+    var value = assertPropertyExists(lastResponse, key, expectedValue, callback)
     if (!value) { return false }
     if (value !== expectedValue) {
       callback.fail('The last response did not have the expected content in ' +
@@ -153,10 +144,8 @@ var GithubStepsWrapper = function () {
     return true
   }
 
-  function assertPropertyContains(lastResponse, lastDocument, key,
-      expectedValue, callback) {
-    var value = assertPropertyExists(lastResponse, lastDocument, key,
-        expectedValue, callback)
+  function assertPropertyContains(lastResponse, key, expectedValue, callback) {
+    var value = assertPropertyExists(lastResponse, key, expectedValue, callback)
     if (!value) { return false }
     if (value.indexOf(expectedValue) === -1) {
       callback.fail('The last response did not have the expected content in ' +

@@ -2,16 +2,17 @@
 
 var request = require('request')
 var traverson = require('traverson')
-var walker = new traverson.JsonWalker()
+
+var traverson = require('traverson')
 
 var env = require('./env')
 
 var World = function World(callback) {
 
   var self = this
+  var api = new traverson.json.from(env.BASE_URL + '/')
 
   this.lastResponse = null
-  this.lastDocument = null
 
   this.get = function(path, callback) {
     this.clear()
@@ -28,13 +29,15 @@ var World = function World(callback) {
 
   this.walkToDocument = function(links, templateParams, callback) {
     this.clear()
-    var startUri = this.rootUri()
-    walker.walk(startUri, links, templateParams, function(error, document) {
+    api.newRequest()
+       .walk(links)
+       .withTemplateParameters(templateParams)
+       .get(function(error, response) {
       if (error) {
-        return callback.fail(new Error('Error while walking from ' + startUri +
-            ' along the links ' + links + ': ' + error.message))
+        return callback.fail(new Error('Error while walking along the links ' +
+            links + ': ' + error.message))
       }
-      self.lastDocument = document
+      self.lastResponse = response
       callback()
     })
   }
@@ -96,7 +99,6 @@ var World = function World(callback) {
 
   this.clear = function() {
     this.lastResponse = null
-    this.lastDocument = null
   }
 
   this.rootPath = function() {
