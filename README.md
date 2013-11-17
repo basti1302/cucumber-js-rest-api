@@ -21,3 +21,8 @@ Setup
 
 You can also do `grunt watch` to let the tests re-run automatically when a
 relevant file changes.
+
+License
+-------
+
+MIT
