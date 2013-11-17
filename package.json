@@ -27,7 +27,7 @@
     "grunt-cucumber": "~0.2.3",
     "request": "~2.27.0",
     "JSONPath": "~0.9.1",
-    "traverson": "~0.1.0"
+    "traverson": "~0.3.0"
   },
   "engines": {
     "node": "~0.8.21"
