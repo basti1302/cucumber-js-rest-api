@@ -12,7 +12,8 @@ var World = function World(callback) {
 
   this.get = function(path, callback) {
     var uri = this.uri(path)
-    request.get(uri, function(error, response) {
+    request.get({url: uri, headers: {'User-Agent': 'request'}},
+        function(error, response) {
       if (error) {
         return callback.fail(new Error('Error on GET request to ' + uri +
           ': ' + error.message))
@@ -24,7 +25,8 @@ var World = function World(callback) {
 
   this.post = function(path, requestBody, callback) {
     var uri = this.uri(path)
-    request({url: uri, body: requestBody, method: 'POST'},
+    request({url: uri, body: requestBody, method: 'POST',
+          headers: {'User-Agent': 'request'}},
         function(error, response) {
       if (error) {
         return callback(new Error('Error on POST request to ' + uri + ': ' +
@@ -37,7 +39,8 @@ var World = function World(callback) {
 
   this.put = function(path, requestBody, callback) {
     var uri = this.uri(path)
-    request({url: uri, body: requestBody, method: 'PUT'},
+    request({url: uri, body: requestBody, method: 'PUT',
+          headers: {'User-Agent': 'request'}},
         function(error, response) {
       if (error) {
         return callback(new Error('Error on PUT request to ' + uri + ': ' +
@@ -63,7 +66,9 @@ var World = function World(callback) {
 
   this.options = function(path, callback) {
     var uri = this.uri(path)
-    request({'uri': uri, method: 'OPTIONS'}, function(error, response) {
+    request({'uri': uri, method: 'OPTIONS',
+          headers: {'User-Agent': 'request'}},
+        function(error, response) {
       if (error) {
         return callback.fail(new Error('Error on OPTIONS request to ' + uri +
             ': ' + error.message))
